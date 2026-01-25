@@ -1,0 +1,9 @@
+/MediSim3D
+  ├── index.html              (The Homepage)
+  ├── styles.css              (Global Design)
+  ├── /simulations            (Where you add new contents)
+  │    ├── /heart             (Folder for Heart Module)
+  │    │    ├── index.html    (The Simulation Page)
+  │    │    └── logic.js      (The 3D Logic)
+  │    └── /brain             (Future module...)
+  └── /assets                 (Images, icons, 3D models)
