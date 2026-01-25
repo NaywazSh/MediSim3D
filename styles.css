@@ -1,0 +1,119 @@
+:root {
+    --bg-dark: #0f172a;
+    --primary: #0ea5e9; /* Medical Blue */
+    --accent: #2dd4bf;  /* Teal/Cyan */
+    --glass: rgba(255, 255, 255, 0.05);
+    --border: rgba(255, 255, 255, 0.1);
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: var(--font-main);
+    overflow-x: hidden;
+}
+
+/* --- Homepage Styles --- */
+.hero {
+    height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+    text-align: center;
+    padding: 20px;
+}
+
+.hero h1 { font-size: 4rem; background: linear-gradient(to right, var(--primary), var(--accent)); -webkit-background-clip: text; color: transparent; margin-bottom: 20px; }
+.hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 600px; }
+
+.grid-container {
+    padding: 40px 10%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: transform 0.3s, border-color 0.3s;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+}
+
+.card:hover { transform: translateY(-5px); border-color: var(--primary); }
+.card h3 { font-size: 1.5rem; margin-bottom: 10px; color: var(--accent); }
+.card p { color: var(--text-muted); line-height: 1.5; }
+.card-btn {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 20px;
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+/* --- Simulation Page Styles --- */
+.sim-layout { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
+
+/* Sidebar Controls */
+.controls-panel {
+    width: 300px;
+    background: rgba(15, 23, 42, 0.9);
+    border-right: 1px solid var(--border);
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 10;
+    backdrop-filter: blur(20px);
+}
+
+.controls-panel h2 { color: var(--primary); margin-bottom: 20px; }
+.control-group { margin-bottom: 25px; }
+.control-group label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--accent); }
+.control-group p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; }
+
+/* Custom Range Slider */
+input[type=range] { width: 100%; cursor: pointer; }
+
+/* The 3D Canvas Area */
+#canvas-container { flex-grow: 1; position: relative; background: #000; }
+
+/* Overlay Info Box */
+.info-overlay {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0,0,0,0.8);
+    border: 1px solid var(--primary);
+    padding: 15px;
+    border-radius: 8px;
+    max-width: 300px;
+    pointer-events: none; /* Let clicks pass through */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    padding: 10px 15px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    z-index: 20;
+}
+.back-btn:hover { background: var(--primary); }
