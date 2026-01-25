@@ -3,83 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediSim3D | MBBS Interactive Learning</title>
+    <title>MediSim3D | Interactive Anatomy Library</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-    <!-- Hero Section -->
+    <!-- Navigation -->
+    <nav>
+        <div class="logo"><i class="fas fa-cube"></i> MediSim3D</div>
+        <div class="nav-links">
+            <a href="#" class="active">Library</a>
+            <a href="#">About</a>
+            <a href="#" class="nav-btn">Get Access</a>
+        </div>
+    </nav>
+
+    <!-- Hero Area -->
     <section class="hero">
-        <h1>MediSim 3D</h1>
-        <p>Interactive Medical Simulation Hub for MBBS Students</p>
+        <h1>Interactive Medical<br><span class="text-gradient">Simulation Library</span></h1>
+        <p style="color: #94a3b8; font-size: 1.1rem; margin-top: 10px;">
+            High-fidelity 3D organs and physiological systems for MBBS professionals.
+        </p>
+
+        <!-- Search Bar (Visual) -->
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="search-input" placeholder="Search topics (e.g. Heart, Neurology)...">
+        </div>
     </section>
 
-    <!-- Main Content Grid -->
-    <section class="grid-container">
+    <!-- SECTION 1: FREE ACCESS -->
+    <section class="section-container">
+        <div class="section-header">
+            <i class="fas fa-unlock-alt" style="color: var(--accent-free);"></i>
+            <h2 class="section-title">Free Access Demos</h2>
+        </div>
 
-        <!-- 1. ANATOMY CORNER -->
-        <div class="card">
-            <h3>💀 Anatomy</h3>
-            <p>Gross Anatomy, Neuroanatomy, and Osteology simulations.</p>
-            <br>
-            <!-- LINK: The Heart (Anatomy View) -->
-            <a href="simulations/heart/index.html" class="card-btn">Launch: Heart Model</a>
+        <div class="grid">
             
-            <!-- SPACE FOR FUTURE FILES -->
-            <!-- <a href="simulations/skull/index.html" class="card-btn">Launch: Skull</a> -->
+            <!-- Card 1: Anatomy (Linked to Heart) -->
+            <a href="simulations/heart/index.html" class="course-card">
+                <div class="card-thumb thumb-anatomy">
+                    <span class="badge badge-free">Free • Anatomy</span>
+                    <i class="fas fa-heart"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Thoracic Anatomy: Heart</h3>
+                    <p>Explore the external and internal structure of the human heart with interactive labels.</p>
+                    <div class="card-footer">
+                        <span><i class="fas fa-cube"></i> 3D Model</span>
+                        <span><i class="fas fa-arrow-right"></i> Launch</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Card 2: Physiology (Linked to Heart) -->
+            <a href="simulations/heart/index.html" class="course-card">
+                <div class="card-thumb thumb-physio">
+                    <span class="badge badge-free">Free • Physiology</span>
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Cardiac Cycle Simulation</h3>
+                    <p>Visualize systole and diastole with adjustable BPM and blood flow particle systems.</p>
+                    <div class="card-footer">
+                        <span><i class="fas fa-play-circle"></i> Simulation</span>
+                        <span><i class="fas fa-arrow-right"></i> Launch</span>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+    </section>
+
+    <!-- SECTION 2: PREMIUM ACCESS -->
+    <section class="section-container">
+        <div class="section-header">
+            <i class="fas fa-star" style="color: var(--accent-premium);"></i>
+            <h2 class="section-title">Premium Access</h2>
         </div>
 
-        <!-- 2. PHYSIOLOGY CORNER -->
-        <div class="card">
-            <h3>⚡ Physiology</h3>
-            <p>Functions, mechanisms, and physical processes of the human body.</p>
-            <br>
-            <!-- LINK: The Heart (Function View) -->
-            <a href="simulations/heart/index.html" class="card-btn">Launch: Cardiac Cycle</a>
+        <div class="grid">
 
-            <!-- SPACE FOR FUTURE FILES -->
+            <!-- Card 3: Histology -->
+            <div class="course-card premium">
+                <div class="card-thumb thumb-locked">
+                    <span class="badge badge-premium">Premium</span>
+                    <i class="fas fa-microscope"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Histology: Epithelium</h3>
+                    <p>Microscopic exploration of Simple Squamous and Cuboidal Epithelial tissues.</p>
+                    <div class="card-footer">
+                        <span><i class="fas fa-layer-group"></i> Micro-view</span>
+                        <span><i class="fas fa-lock"></i> Locked</span>
+                    </div>
+                </div>
+                <!-- Hover Overlay -->
+                <div class="lock-overlay">
+                    <i class="fas fa-lock lock-icon"></i>
+                    <span class="unlock-btn">Upgrade to Unlock</span>
+                </div>
+            </div>
+
+            <!-- Card 4: Embryology -->
+            <div class="course-card premium">
+                <div class="card-thumb thumb-locked">
+                    <span class="badge badge-premium">Premium</span>
+                    <i class="fas fa-baby"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Embryology: Week 4</h3>
+                    <p>Developmental simulation of the neural tube and pharyngeal arches.</p>
+                    <div class="card-footer">
+                        <span><i class="fas fa-clock"></i> Timeline</span>
+                        <span><i class="fas fa-lock"></i> Locked</span>
+                    </div>
+                </div>
+                <div class="lock-overlay">
+                    <i class="fas fa-lock lock-icon"></i>
+                    <span class="unlock-btn">Upgrade to Unlock</span>
+                </div>
+            </div>
+
+            <!-- Card 5: Pathology -->
+            <div class="course-card premium">
+                <div class="card-thumb thumb-locked">
+                    <span class="badge badge-premium">Premium</span>
+                    <i class="fas fa-virus"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Pathology: Atherosclerosis</h3>
+                    <p>3D visualization of plaque buildup in coronary arteries and occlusion.</p>
+                    <div class="card-footer">
+                        <span><i class="fas fa-exclamation-triangle"></i> Disease</span>
+                        <span><i class="fas fa-lock"></i> Locked</span>
+                    </div>
+                </div>
+                <div class="lock-overlay">
+                    <i class="fas fa-lock lock-icon"></i>
+                    <span class="unlock-btn">Upgrade to Unlock</span>
+                </div>
+            </div>
+
+             <!-- Card 6: Biochemistry -->
+             <div class="course-card premium">
+                <div class="card-thumb thumb-locked">
+                    <span class="badge badge-premium">Premium</span>
+                    <i class="fas fa-dna"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Biochem: Enzyme Action</h3>
+                    <p>Molecular lock-and-key mechanism simulation.</p>
+                    <div class="card-footer">
+                        <span><i class="fas fa-atom"></i> Molecular</span>
+                        <span><i class="fas fa-lock"></i> Locked</span>
+                    </div>
+                </div>
+                <div class="lock-overlay">
+                    <i class="fas fa-lock lock-icon"></i>
+                    <span class="unlock-btn">Upgrade to Unlock</span>
+                </div>
+            </div>
+
         </div>
-
-        <!-- 3. HISTOLOGY CORNER -->
-        <div class="card">
-            <h3>🔬 Histology</h3>
-            <p>Microscopic study of tissues and cells.</p>
-            <br>
-            <a href="#" class="card-btn" style="opacity:0.5; cursor:not-allowed;">No simulations yet</a>
-            
-            <!-- SPACE FOR FUTURE FILES -->
-        </div>
-
-        <!-- 4. EMBRYOLOGY CORNER -->
-        <div class="card">
-            <h3>👶 Embryology</h3>
-            <p>Developmental anatomy from gametogenesis to birth.</p>
-            <br>
-            <a href="#" class="card-btn" style="opacity:0.5; cursor:not-allowed;">No simulations yet</a>
-
-            <!-- SPACE FOR FUTURE FILES -->
-        </div>
-
-        <!-- 5. BIOCHEMISTRY CORNER -->
-        <div class="card">
-            <h3>🧬 Biochemistry</h3>
-            <p>Chemical processes and molecular interactions.</p>
-            <br>
-            <a href="#" class="card-btn" style="opacity:0.5; cursor:not-allowed;">No simulations yet</a>
-
-            <!-- SPACE FOR FUTURE FILES -->
-        </div>
-
-        <!-- 6. PATHOLOGY CORNER -->
-        <div class="card">
-            <h3>🦠 Pathology</h3>
-            <p>Study of disease, injury, and structural changes.</p>
-            <br>
-            <a href="#" class="card-btn" style="opacity:0.5; cursor:not-allowed;">No simulations yet</a>
-
-            <!-- SPACE FOR FUTURE FILES -->
-        </div>
-
     </section>
 
 </body>
