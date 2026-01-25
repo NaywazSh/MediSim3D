@@ -4,9 +4,9 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer
 
 // --- CONFIGURATION ---
 const config = {
-    colorArtery: 0xd91e18, // Bright Red
-    colorVein: 0x2c3e50,   // Dark Blue
-    colorMuscle: 0xa93226, // Deep Red
+    colorArtery: 0xff3333, // Brighter Red for arteries
+    colorVein: 0x2c3e50,   
+    colorMuscle: 0xd61c1c, // <--- CHANGED: Much brighter, "fresh organ" red
     bg: 0x050505
 };
 
@@ -89,7 +89,8 @@ const heartGroup = new THREE.Group();
 scene.add(heartGroup);
 
 // 1. Main Ventricles (Deformed Sphere)
-const ventricleGeo = new THREE.SphereGeometry(1.8, 64, 64);
+// INCREASED SIZE: Changed radius from 1.8 to 2.2
+const ventricleGeo = new THREE.SphereGeometry(2.2, 64, 64); 
 const pos = ventricleGeo.attributes.position;
 for(let i=0; i<pos.count; i++){
     let x = pos.getX(i);
