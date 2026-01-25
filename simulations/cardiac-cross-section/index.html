@@ -3,12 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cardiac Simulation - MediSim3D</title>
+    <title>Cardiac Cross Section - MediSim3D</title>
     
-    <!-- Link back to global styles (Note the ../../ to go back 2 folders) -->
+    <!-- Link to Global Styles -->
     <link rel="stylesheet" href="../../styles.css">
     
-    <!-- Load Three.js from CDN (No installation needed) -->
+    <style>
+        /* --- LOCAL SIMULATION STYLES --- */
+        /* These restore the layout that was lost when updating the main homepage */
+        
+        body { overflow: hidden; } /* Stop scrolling on sim page */
+
+        .sim-layout {
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            background: #020617; /* Dark Navy Background */
+        }
+
+        /* Sidebar Styling */
+        .controls-panel {
+            width: 320px;
+            background: rgba(30, 41, 59, 0.7); /* Glassy Navy */
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            overflow-y: auto;
+            z-index: 10;
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .controls-panel h2 { color: #22d3ee; margin-bottom: 5px; }
+        .controls-panel p { color: #94a3b8; font-size: 0.9rem; }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #f8fafc;
+            font-weight: 600;
+        }
+
+        /* Range Slider Styling */
+        input[type=range] {
+            width: 100%;
+            accent-color: #22d3ee;
+            cursor: pointer;
+        }
+
+        /* Buttons */
+        .card-btn {
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid #22d3ee;
+            color: #22d3ee;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: center;
+            font-weight: bold;
+        }
+        .card-btn:hover {
+            background: #22d3ee;
+            color: #000;
+        }
+
+        /* The 3D Canvas Area */
+        #canvas-container {
+            flex-grow: 1;
+            position: relative;
+            background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+        }
+
+        /* Info Overlay */
+        .info-overlay {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid #22d3ee;
+            color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        /* Back Button Override */
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px; /* Moved to right */
+            z-index: 20;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: white;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .back-btn:hover { background: #22d3ee; color: black; }
+    </style>
+
+    <!-- Import Three.js -->
     <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
     <script type="importmap">
       {
@@ -23,38 +123,39 @@
 
     <div class="sim-layout">
         
-        <!-- Navigation Back -->
-        <a href="../../index.html" class="back-btn">← Dashboard</a>
-
-        <!-- Left: Controls & Education Panel -->
+        <!-- Left: Controls -->
         <aside class="controls-panel">
-            <h2>🫀 Cardiac Cycle</h2>
-            <p>Interactive Control Panel</p>
-            <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
-
+            <div>
+                <h2>🫀 Cardiac Cycle</h2>
+                <p>Interactive Control Panel</p>
+            </div>
+            
             <div class="control-group">
                 <label>Heart Rate (BPM): <span id="bpm-display">60</span></label>
-                <p>Adjust the simulation speed to observe Tachycardia or Bradycardia.</p>
                 <input type="range" id="bpm-slider" min="30" max="180" value="60">
+                <p style="margin-top:5px; font-size:0.8rem;">Slide to adjust simulation speed.</p>
             </div>
 
             <div class="control-group">
                 <label>View Mode</label>
-                <button class="card-btn" style="width:100%; margin-top:5px;" id="toggle-wireframe">Toggle X-Ray Mode</button>
+                <button class="card-btn" style="width:100%;" id="toggle-wireframe">Toggle X-Ray Mode</button>
             </div>
 
             <div class="control-group">
                 <label>Anatomy Notes:</label>
-                <p id="anatomy-text" style="color:white; background:rgba(255,255,255,0.1); padding:10px; border-radius:4px;">
+                <div id="anatomy-text" style="background:rgba(255,255,255,0.05); padding:15px; border-radius:8px; font-size:0.85rem; line-height:1.5;">
                     Hover over parts of the model to identify them.
-                </p>
+                </div>
             </div>
         </aside>
 
         <!-- Right: 3D Canvas -->
-        <div id="canvas-container"></div>
+        <div id="canvas-container">
+            <!-- Back Button inside Canvas area -->
+            <a href="../../index.html" class="back-btn">← Dashboard</a>
+        </div>
         
-        <!-- Floating Label on 3D Object -->
+        <!-- Floating Label -->
         <div id="tooltip" class="info-overlay">Structure Name</div>
     </div>
 
