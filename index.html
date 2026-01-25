@@ -5,240 +5,79 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MediSim3D | MBBS Interactive Learning</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        /* Extra styles for the Subject Grid */
-        .subject-grid {
-            padding: 40px 10%;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-        }
-
-        .subject-card {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            overflow: hidden;
-            transition: 0.3s;
-            position: relative;
-            backdrop-filter: blur(10px);
-        }
-
-        .subject-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-        }
-
-        .card-header {
-            padding: 20px;
-            background: linear-gradient(90deg, rgba(255,255,255,0.03), transparent);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .icon-box {
-            width: 45px;
-            height: 45px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-            color: white;
-        }
-
-        /* Subject Colors */
-        .c-anatomy { background: linear-gradient(135deg, #e11d48, #be123c); } /* Red */
-        .c-physio { background: linear-gradient(135deg, #0ea5e9, #0284c7); } /* Blue */
-        .c-biochem { background: linear-gradient(135deg, #f59e0b, #d97706); } /* Orange */
-        .c-patho { background: linear-gradient(135deg, #8b5cf6, #7c3aed); } /* Purple */
-        .c-histo { background: linear-gradient(135deg, #10b981, #059669); } /* Green */
-        .c-embryo { background: linear-gradient(135deg, #ec4899, #db2777); } /* Pink */
-
-        .card-body { padding: 20px; }
-        .card-body h3 { margin-bottom: 5px; color: var(--text-main); }
-        .card-body p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; min-height: 40px;}
-
-        /* List of Available Simulations inside the card */
-        .sim-list {
-            list-style: none;
-        }
-        .sim-link {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            background: rgba(255,255,255,0.03);
-            border-radius: 6px;
-            margin-bottom: 8px;
-            text-decoration: none;
-            color: var(--text-main);
-            border-left: 3px solid transparent;
-            transition: 0.2s;
-            font-size: 0.9rem;
-        }
-        .sim-link:hover {
-            background: rgba(255,255,255,0.08);
-            border-left-color: var(--accent);
-        }
-        .sim-link.locked {
-            opacity: 0.5;
-            cursor: not-allowed;
-            border-left-color: #333;
-        }
-        
-        .tag { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.1); }
-        .tag-new { background: var(--primary); color: white; }
-
-    </style>
 </head>
 <body>
 
     <!-- Hero Section -->
-    <section class="hero" style="height: 40vh;">
+    <section class="hero">
         <h1>MediSim 3D</h1>
-        <p>Select a Department to access 3D Interactive Models</p>
+        <p>Interactive Medical Simulation Hub for MBBS Students</p>
     </section>
 
-    <!-- MBBS Subject Grid -->
-    <section class="subject-grid">
+    <!-- Main Content Grid -->
+    <section class="grid-container">
 
-        <!-- 1. ANATOMY -->
-        <div class="subject-card">
-            <div class="card-header">
-                <div class="icon-box c-anatomy"><i class="fas fa-bone"></i></div>
-                <div>
-                    <h3>Anatomy</h3>
-                    <span style="font-size:0.8rem; color:var(--text-muted);">Gross & Neuroanatomy</span>
-                </div>
-            </div>
-            <div class="card-body">
-                <p>Structure of the human body, organs, and systems.</p>
-                <div class="sim-list">
-                    <!-- Putting the Heart here for now as Gross Anatomy -->
-                    <a href="simulations/heart/index.html" class="sim-link">
-                        <span>🫀 Thorax: The Heart</span>
-                        <span class="tag tag-new">Interactive</span>
-                    </a>
-                    <a href="#" class="sim-link locked">
-                        <span>💀 Osteology: Skull</span>
-                        <span class="tag">Coming Soon</span>
-                    </a>
-                </div>
-            </div>
+        <!-- 1. ANATOMY CORNER -->
+        <div class="card">
+            <h3>💀 Anatomy</h3>
+            <p>Gross Anatomy, Neuroanatomy, and Osteology simulations.</p>
+            <br>
+            <!-- LINK: The Heart (Anatomy View) -->
+            <a href="simulations/heart/index.html" class="card-btn">Launch: Heart Model</a>
+            
+            <!-- SPACE FOR FUTURE FILES -->
+            <!-- <a href="simulations/skull/index.html" class="card-btn">Launch: Skull</a> -->
         </div>
 
-        <!-- 2. PHYSIOLOGY -->
-        <div class="subject-card">
-            <div class="card-header">
-                <div class="icon-box c-physio"><i class="fas fa-heartbeat"></i></div>
-                <div>
-                    <h3>Physiology</h3>
-                    <span style="font-size:0.8rem; color:var(--text-muted);">Functions & Mechanisms</span>
-                </div>
-            </div>
-            <div class="card-body">
-                <p>Functions of body systems, physical and chemical processes.</p>
-                <div class="sim-list">
-                    <!-- Linking Heart here too because it has the Beat/BPM logic -->
-                    <a href="simulations/heart/index.html" class="sim-link">
-                        <span>❤️ Cardiac Cycle</span>
-                        <span class="tag tag-new">Sim</span>
-                    </a>
-                    <a href="#" class="sim-link locked">
-                        <span>🧠 Nerve Impulse</span>
-                        <span class="tag">Coming Soon</span>
-                    </a>
-                </div>
-            </div>
+        <!-- 2. PHYSIOLOGY CORNER -->
+        <div class="card">
+            <h3>⚡ Physiology</h3>
+            <p>Functions, mechanisms, and physical processes of the human body.</p>
+            <br>
+            <!-- LINK: The Heart (Function View) -->
+            <a href="simulations/heart/index.html" class="card-btn">Launch: Cardiac Cycle</a>
+
+            <!-- SPACE FOR FUTURE FILES -->
         </div>
 
-        <!-- 3. BIOCHEMISTRY -->
-        <div class="subject-card">
-            <div class="card-header">
-                <div class="icon-box c-biochem"><i class="fas fa-dna"></i></div>
-                <div>
-                    <h3>Biochemistry</h3>
-                    <span style="font-size:0.8rem; color:var(--text-muted);">Molecular Processes</span>
-                </div>
-            </div>
-            <div class="card-body">
-                <p>Chemical processes within and related to living organisms.</p>
-                <div class="sim-list">
-                    <a href="#" class="sim-link locked">
-                        <span>🧬 DNA Replication</span>
-                        <span class="tag">Coming Soon</span>
-                    </a>
-                    <a href="#" class="sim-link locked">
-                        <span>💊 Enzyme Action</span>
-                        <span class="tag">Coming Soon</span>
-                    </a>
-                </div>
-            </div>
+        <!-- 3. HISTOLOGY CORNER -->
+        <div class="card">
+            <h3>🔬 Histology</h3>
+            <p>Microscopic study of tissues and cells.</p>
+            <br>
+            <a href="#" class="card-btn" style="opacity:0.5; cursor:not-allowed;">No simulations yet</a>
+            
+            <!-- SPACE FOR FUTURE FILES -->
         </div>
 
-        <!-- 4. PATHOLOGY -->
-        <div class="subject-card">
-            <div class="card-header">
-                <div class="icon-box c-patho"><i class="fas fa-virus"></i></div>
-                <div>
-                    <h3>Pathology</h3>
-                    <span style="font-size:0.8rem; color:var(--text-muted);">Disease Mechanisms</span>
-                </div>
-            </div>
-            <div class="card-body">
-                <p>Causes and effects of disease or injury.</p>
-                <div class="sim-list">
-                    <a href="#" class="sim-link locked">
-                        <span>🫀 Atherosclerosis</span>
-                        <span class="tag">Coming Soon</span>
-                    </a>
-                </div>
-            </div>
+        <!-- 4. EMBRYOLOGY CORNER -->
+        <div class="card">
+            <h3>👶 Embryology</h3>
+            <p>Developmental anatomy from gametogenesis to birth.</p>
+            <br>
+            <a href="#" class="card-btn" style="opacity:0.5; cursor:not-allowed;">No simulations yet</a>
+
+            <!-- SPACE FOR FUTURE FILES -->
         </div>
 
-        <!-- 5. HISTOLOGY -->
-        <div class="subject-card">
-            <div class="card-header">
-                <div class="icon-box c-histo"><i class="fas fa-microscope"></i></div>
-                <div>
-                    <h3>Histology</h3>
-                    <span style="font-size:0.8rem; color:var(--text-muted);">Microscopic Anatomy</span>
-                </div>
-            </div>
-            <div class="card-body">
-                <p>Microscopic structure of tissues.</p>
-                <div class="sim-list">
-                    <a href="#" class="sim-link locked">
-                        <span>🔬 Epithelial Tissue</span>
-                        <span class="tag">Coming Soon</span>
-                    </a>
-                </div>
-            </div>
+        <!-- 5. BIOCHEMISTRY CORNER -->
+        <div class="card">
+            <h3>🧬 Biochemistry</h3>
+            <p>Chemical processes and molecular interactions.</p>
+            <br>
+            <a href="#" class="card-btn" style="opacity:0.5; cursor:not-allowed;">No simulations yet</a>
+
+            <!-- SPACE FOR FUTURE FILES -->
         </div>
 
-        <!-- 6. EMBRYOLOGY -->
-        <div class="subject-card">
-            <div class="card-header">
-                <div class="icon-box c-embryo"><i class="fas fa-baby"></i></div>
-                <div>
-                    <h3>Embryology</h3>
-                    <span style="font-size:0.8rem; color:var(--text-muted);">Developmental Anatomy</span>
-                </div>
-            </div>
-            <div class="card-body">
-                <p>Development of gametes, fertilization, and fetuses.</p>
-                <div class="sim-list">
-                    <a href="#" class="sim-link locked">
-                        <span>🥚 Fetal Circulation</span>
-                        <span class="tag">Coming Soon</span>
-                    </a>
-                </div>
-            </div>
+        <!-- 6. PATHOLOGY CORNER -->
+        <div class="card">
+            <h3>🦠 Pathology</h3>
+            <p>Study of disease, injury, and structural changes.</p>
+            <br>
+            <a href="#" class="card-btn" style="opacity:0.5; cursor:not-allowed;">No simulations yet</a>
+
+            <!-- SPACE FOR FUTURE FILES -->
         </div>
 
     </section>
