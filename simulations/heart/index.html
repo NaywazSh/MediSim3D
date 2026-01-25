@@ -3,104 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Cardiac Simulation</title>
-    <link rel="stylesheet" href="../../styles.css">
-    
-    <style>
-        /* Local overrides for the simulation specific UI */
-        .sim-container { position: relative; width: 100vw; height: 100vh; overflow: hidden; }
-        
-        /* The Floating Labels (3D anchored) */
-        .label-card {
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid var(--primary);
-            color: #fff;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            pointer-events: none;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 0 15px rgba(14, 165, 233, 0.3);
-            opacity: 0;
-            transition: opacity 0.3s;
-            max-width: 200px;
-        }
-        .label-title { color: var(--accent); font-weight: bold; font-size: 1.1rem; display: block; margin-bottom: 4px; }
-        
-        /* Bottom Control Bar */
-        .bottom-bar {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(10px);
-            padding: 15px 30px;
-            border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            z-index: 100;
-        }
-        
-        .toggle-btn {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .toggle-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 0 10px var(--primary); }
-    </style>
-
-    <!-- Import Map for Three.js -->
-    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
-    <script type="importmap">
-      {
-        "imports": {
-          "three": "https://unpkg.com/three@0.150.1/build/three.module.js",
-          "three/addons/": "https://unpkg.com/three@0.150.1/examples/jsm/"
-        }
-      }
-    </script>
+    <title>MediSim3D | MBBS Interactive Learning</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <div class="sim-container">
-        <!-- Back Button -->
-        <a href="../../index.html" class="back-btn" style="top:20px; left:20px;">← Dashboard</a>
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>MediSim 3D</h1>
+        <p>Interactive Medical Simulation Hub for MBBS Students</p>
+    </section>
 
-        <!-- Top Right Stats -->
-        <div style="position:absolute; top:20px; right:20px; text-align:right; z-index:10;">
-            <h2 style="color:white;">Human Heart</h2>
-            <p style="color:var(--accent);">Systolic/Diastolic Simulation</p>
+    <!-- Main Content Grid -->
+    <section class="grid-container">
+
+        <!-- 1. ANATOMY CORNER -->
+        <div class="card">
+            <h3>💀 Anatomy</h3>
+            <p>Gross Anatomy, Neuroanatomy, and Osteology simulations.</p>
+            <br>
+            <!-- LINK: The Heart (Anatomy View) -->
+            <a href="simulations/heart/index.html" class="card-btn">Launch: Heart Model</a>
+            
+            <!-- SPACE FOR FUTURE FILES -->
+            <!-- <a href="simulations/skull/index.html" class="card-btn">Launch: Skull</a> -->
         </div>
 
-        <!-- The 3D Canvas -->
-        <div id="canvas-container" style="width:100%; height:100%;"></div>
+        <!-- 2. PHYSIOLOGY CORNER -->
+        <div class="card">
+            <h3>⚡ Physiology</h3>
+            <p>Functions, mechanisms, and physical processes of the human body.</p>
+            <br>
+            <!-- LINK: The Heart (Function View) -->
+            <a href="simulations/heart/index.html" class="card-btn">Launch: Cardiac Cycle</a>
 
-        <!-- The Floating Label Template (Hidden by default, cloned by JS) -->
-        <div id="label-template" class="label-card">
-            <span class="label-title">Part Name</span>
-            <span class="label-desc">Description goes here.</span>
+            <!-- SPACE FOR FUTURE FILES -->
         </div>
 
-        <!-- Bottom Controls -->
-        <div class="bottom-bar">
-            <div>
-                <span style="color:var(--text-muted); font-size:0.8rem; display:block;">HEART RATE</span>
-                <input type="range" id="bpm-slider" min="30" max="180" value="75">
-            </div>
-            <div style="width: 1px; height: 30px; background: rgba(255,255,255,0.1);"></div>
-            <button class="toggle-btn active" id="btn-flow">Blood Flow</button>
-            <button class="toggle-btn" id="btn-labels">Show Labels</button>
-            <button class="toggle-btn" id="btn-cut">Cross Section</button>
+        <!-- 3. HISTOLOGY CORNER -->
+        <div class="card">
+            <h3>🔬 Histology</h3>
+            <p>Microscopic study of tissues and cells.</p>
+            <br>
+            <a href="#" class="card-btn" style="opacity:0.5; cursor:not-allowed;">No simulations yet</a>
+            
+            <!-- SPACE FOR FUTURE FILES -->
         </div>
-    </div>
 
-    <script type="module" src="logic.js"></script>
+        <!-- 4. EMBRYOLOGY CORNER -->
+        <div class="card">
+            <h3>👶 Embryology</h3>
+            <p>Developmental anatomy from gametogenesis to birth.</p>
+            <br>
+            <a href="#" class="card-btn" style="opacity:0.5; cursor:not-allowed;">No simulations yet</a>
+
+            <!-- SPACE FOR FUTURE FILES -->
+        </div>
+
+        <!-- 5. BIOCHEMISTRY CORNER -->
+        <div class="card">
+            <h3>🧬 Biochemistry</h3>
+            <p>Chemical processes and molecular interactions.</p>
+            <br>
+            <a href="#" class="card-btn" style="opacity:0.5; cursor:not-allowed;">No simulations yet</a>
+
+            <!-- SPACE FOR FUTURE FILES -->
+        </div>
+
+        <!-- 6. PATHOLOGY CORNER -->
+        <div class="card">
+            <h3>🦠 Pathology</h3>
+            <p>Study of disease, injury, and structural changes.</p>
+            <br>
+            <a href="#" class="card-btn" style="opacity:0.5; cursor:not-allowed;">No simulations yet</a>
+
+            <!-- SPACE FOR FUTURE FILES -->
+        </div>
+
+    </section>
+
 </body>
 </html>
