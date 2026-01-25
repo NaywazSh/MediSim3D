@@ -1,1 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Cardiac Anatomy & Physiology | MBBS Digital Lab</title>
+    
+    <!-- Modern Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            --primary-dark: #0369a1;
+            --accent: #38bdf8;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --bg-dark: #020617;
+            --panel-bg: rgba(15, 23, 42, 0.75);
+            --border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Medical UI Overlay Layer */
+        .ui-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px;
+        }
+
+        .ui-overlay > * { pointer-events: auto; }
+
+        /* Header Section */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .back-btn {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 10px 18px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            backdrop-filter: blur(12px);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .back-btn:hover { border-color: var(--primary); background: rgba(14, 165, 233, 0.1); }
+
+        .clinical-header { text-align: right; }
+        .clinical-header h1 { 
+            font-size: 1.5rem; 
+            letter-spacing: -0.025em; 
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+        .clinical-header p { 
+            color: var(--primary); 
+            font-family: 'JetBrains Mono', monospace; 
+            font-size: 0.8rem;
+        }
+
+        /* Stats Panel (Left Side) */
+        .stats-panel {
+            position: absolute;
+            left: 24px;
+            top: 100px;
+            width: 260px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            backdrop-filter: blur(16px);
+        }
+
+        .stat-item { margin-bottom: 16px; }
+        .stat-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 4px; }
+        .stat-value { font-family: 'JetBrains Mono', monospace; font-size: 1.25rem; color: var(--accent); }
+        .stat-unit { font-size: 0.8rem; margin-left: 4px; color: var(--text-muted); }
+
+        /* Label Cards (3D Anchored) */
+        .label-card {
+            background: rgba(15, 23, 42, 0.95);
+            border-left: 3px solid var(--primary);
+            padding: 12px 16px;
+            border-radius: 4px 12px 12px 4px;
+            min-width: 180px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            display: none; /* Controlled by JS */
+        }
+        .label-card .title { color: var(--primary); font-weight: 700; font-size: 0.9rem; display: block; margin-bottom: 2px; }
+        .label-card .desc { color: var(--text-muted); font-size: 0.75rem; line-height: 1.4; }
+
+        /* Controls Bar (Bottom) */
+        .bottom-bar {
+            align-self: center;
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            padding: 12px 32px;
+            border-radius: 24px;
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .control-group { display: flex; align-items: center; gap: 12px; }
+        .control-label { font-size: 0.7rem; font-weight: 700; color: var(--text-muted); white-space: nowrap; }
+
+        input[type="range"] {
+            appearance: none;
+            width: 120px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .toggle-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .toggle-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--text-muted); }
+        .toggle-btn.active { 
+            background: var(--primary); 
+            color: white; 
+            border-color: var(--primary);
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.4);
+        }
+
+        /* Heart Rate Pulse Animation */
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--danger);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        #canvas-container { position: absolute; inset: 0; z-index: 1; }
+    </style>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.150.1/examples/jsm/"
+        }
+      }
+    </script>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <div class="ui-overlay">
+        <!-- Header -->
+        <div class="header">
+            <a href="#" class="back-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                ANATOMY DASHBOARD
+            </a>
+            <div class="clinical-header">
+                <h1>Cardiac Physiology v4.2</h1>
+                <p>SIMULATION ACTIVE // REAL-TIME RENDERING</p>
+            </div>
+        </div>
+
+        <!-- Left Stats Panel -->
+        <div class="stats-panel">
+            <div class="stat-item">
+                <div class="stat-label"><span class="pulse-dot"></span>Current Heart Rate</div>
+                <div class="stat-value" id="val-bpm">75<span class="stat-unit">BPM</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Stroke Volume</div>
+                <div class="stat-value">72<span class="stat-unit">mL</span></div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Cardiac Output</div>
+                <div class="stat-value" id="val-co">5.4<span class="stat-unit">L/min</span></div>
+            </div>
+            <div style="margin-top:20px; border-top: 1px solid var(--border); padding-top:15px;">
+                <p style="font-size:0.65rem; color: var(--text-muted); line-height:1.5;">
+                    <strong style="color:var(--primary)">MBBS NOTES:</strong><br>
+                    Observe the closure of the Atrioventricular valves (Mitral/Tricuspid) during the onset of Systole.
+                </p>
+            </div>
+        </div>
+
+        <!-- Bottom Controls -->
+        <div class="bottom-bar">
+            <div class="control-group">
+                <span class="control-label">HEART RATE</span>
+                <input type="range" id="bpm-slider" min="40" max="180" value="75">
+            </div>
+            
+            <div style="width: 1px; height: 32px; background: var(--border);"></div>
+            
+            <div class="control-group">
+                <button class="toggle-btn active" id="btn-flow">Hemodynamics</button>
+                <button class="toggle-btn" id="btn-labels">Anatomy Labels</button>
+                <button class="toggle-btn" id="btn-cut">Sagittal Section</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3D Label Template (Cloned by JS) -->
+    <div id="label-container" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:5;">
+        <!-- Example Label (Normally added via JS) -->
+        <div class="label-card" id="label-aorta">
+            <span class="title">Ascending Aorta</span>
+            <span class="desc">Distributes oxygenated blood to the systemic circulation.</span>
+        </div>
+    </div>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // --- Initialization ---
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x020617);
+        scene.fog = new THREE.Fog(0x020617, 10, 50);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 2, 10);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        container.appendChild(renderer.domElement);
+
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+
+        // --- Lighting ---
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
+
+        const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        mainLight.position.set(5, 10, 7.5);
+        scene.add(mainLight);
+
+        const blueRimLight = new THREE.PointLight(0x0ea5e9, 2, 20);
+        blueRimLight.position.set(-5, 2, -5);
+        scene.add(blueRimLight);
+
+        // --- Heart Placeholder (MBBS Representation) ---
+        // In the real app, this would be a GLTF model
+        const heartGroup = new THREE.Group();
+        scene.add(heartGroup);
+
+        const mainBodyGeom = new THREE.SphereGeometry(2, 32, 32);
+        const heartMat = new THREE.MeshPhongMaterial({ 
+            color: 0xef4444, 
+            shininess: 100, 
+            emissive: 0x450a0a,
+            flatShading: false 
+        });
+        const heartBody = new THREE.Mesh(mainBodyGeom, heartMat);
+        heartBody.scale.set(1, 1.2, 0.8);
+        heartGroup.add(heartBody);
+
+        // Grid Floor
+        const grid = new THREE.GridHelper(50, 50, 0x1e293b, 0x0f172a);
+        grid.position.y = -4;
+        scene.add(grid);
+
+        // --- Interaction Logic ---
+        const bpmSlider = document.getElementById('bpm-slider');
+        const bpmValDisplay = document.getElementById('val-bpm');
+        const coValDisplay = document.getElementById('val-co');
+        let bpm = 75;
+
+        bpmSlider.addEventListener('input', (e) => {
+            bpm = e.target.value;
+            bpmValDisplay.innerHTML = `${bpm}<span class="stat-unit">BPM</span>`;
+            // Formula: CO = SV * HR (Approximation)
+            const co = (72 * bpm / 1000).toFixed(1);
+            coValDisplay.innerHTML = `${co}<span class="stat-unit">L/min</span>`;
+        });
+
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.classList.toggle('active');
+            });
+        });
+
+        // --- Animation Loop ---
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = clock.getElapsedTime();
+            const pulseSpeed = bpm / 60;
+            
+            // Heart Beat Scaling Logic
+            const pulse = 1 + Math.sin(time * Math.PI * 2 * pulseSpeed) * 0.05;
+            heartGroup.scale.set(pulse, pulse, pulse);
+
+            // Subtle rotation
+            heartGroup.rotation.y += 0.002;
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Start
+        animate();
+
+        // Label handling (Mockup)
+        setTimeout(() => {
+            const aortaLabel = document.getElementById('label-aorta');
+            aortaLabel.style.display = 'block';
+            aortaLabel.style.left = '60%';
+            aortaLabel.style.top = '40%';
+        }, 1000);
+
+    </script>
+</body>
+</html>
