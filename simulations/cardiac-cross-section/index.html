@@ -1,1 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardiac Simulation - MediSim3D</title>
+    
+    <!-- Link back to global styles (Note the ../../ to go back 2 folders) -->
+    <link rel="stylesheet" href="../../styles.css">
+    
+    <!-- Load Three.js from CDN (No installation needed) -->
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://unpkg.com/three@0.150.1/build/three.module.js",
+          "three/addons/": "https://unpkg.com/three@0.150.1/examples/jsm/"
+        }
+      }
+    </script>
+</head>
+<body>
 
+    <div class="sim-layout">
+        
+        <!-- Navigation Back -->
+        <a href="../../index.html" class="back-btn">← Dashboard</a>
+
+        <!-- Left: Controls & Education Panel -->
+        <aside class="controls-panel">
+            <h2>🫀 Cardiac Cycle</h2>
+            <p>Interactive Control Panel</p>
+            <hr style="border-color: rgba(255,255,255,0.1); margin: 15px 0;">
+
+            <div class="control-group">
+                <label>Heart Rate (BPM): <span id="bpm-display">60</span></label>
+                <p>Adjust the simulation speed to observe Tachycardia or Bradycardia.</p>
+                <input type="range" id="bpm-slider" min="30" max="180" value="60">
+            </div>
+
+            <div class="control-group">
+                <label>View Mode</label>
+                <button class="card-btn" style="width:100%; margin-top:5px;" id="toggle-wireframe">Toggle X-Ray Mode</button>
+            </div>
+
+            <div class="control-group">
+                <label>Anatomy Notes:</label>
+                <p id="anatomy-text" style="color:white; background:rgba(255,255,255,0.1); padding:10px; border-radius:4px;">
+                    Hover over parts of the model to identify them.
+                </p>
+            </div>
+        </aside>
+
+        <!-- Right: 3D Canvas -->
+        <div id="canvas-container"></div>
+        
+        <!-- Floating Label on 3D Object -->
+        <div id="tooltip" class="info-overlay">Structure Name</div>
+    </div>
+
+    <!-- The Logic Script -->
+    <script type="module" src="logic.js"></script>
+</body>
+</html>
