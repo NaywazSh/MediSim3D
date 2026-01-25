@@ -1,1 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBBS Anatomy: 3D Cardiac Reconstruction</title>
+    
+    <!-- Modern Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #ef4444;
+            --primary-glow: rgba(239, 68, 68, 0.4);
+            --bg-dark: #050101;
+            --panel-bg: rgba(20, 5, 5, 0.85);
+            --border: rgba(255, 68, 68, 0.2);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-blue: #38bdf8;
+        }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at center, #1a0505 0%, #050000 100%);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* 3D Canvas Layer */
+        #canvas-container { position: absolute; inset: 0; z-index: 1; }
+
+        /* UI Overlay Layer */
+        .ui-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 25px;
+        }
+
+        .ui-overlay > * { pointer-events: auto; }
+
+        /* Side Panels */
+        .glass-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            width: 320px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: 800;
+        }
+
+        .header p {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 15px;
+        }
+
+        /* Data Readouts */
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 15px 0;
+        }
+
+        .data-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .data-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; }
+        .data-value { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; color: var(--accent-blue); }
+        .data-unit { font-size: 0.7rem; color: var(--text-muted); margin-left: 3px; }
+
+        /* Clinical Notes Box */
+        .notes-box {
+            background: rgba(14, 165, 233, 0.05);
+            border-left: 3px solid var(--accent-blue);
+            padding: 12px;
+            margin-top: 15px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .notes-header { font-size: 0.7rem; font-weight: 800; color: var(--accent-blue); margin-bottom: 5px; text-transform: uppercase; }
+        .notes-body { font-size: 0.75rem; line-height: 1.5; color: var(--text-muted); font-style: italic; }
+
+        /* Bottom Controls */
+        .controls-bar {
+            align-self: center;
+            background: var(--panel-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border);
+            padding: 12px 30px;
+            border-radius: 40px;
+            display: flex;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .control-group { display: flex; flex-direction: column; gap: 4px; }
+        .control-label { font-size: 0.6rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+
+        .btn-group { display: flex; gap: 8px; }
+        .toggle-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+        .toggle-btn.active { 
+            background: var(--primary); 
+            color: white; 
+            border-color: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        input[type="range"] {
+            appearance: none;
+            width: 130px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .hint-text {
+            position: absolute;
+            bottom: 20px;
+            left: 30px;
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"></div>
+
+    <div class="ui-overlay">
+        <!-- Main Panel -->
+        <div class="glass-panel">
+            <div class="header">
+                <h1>MBBS Cardiac Lab</h1>
+                <p>SIMULATION ENGINE V5.0</p>
+            </div>
+
+            <!-- Vital Stats -->
+            <div class="data-grid">
+                <div class="data-item">
+                    <div class="data-label">Heart Rate</div>
+                    <div class="data-value" id="bpm-val">75<span class="data-unit">BPM</span></div>
+                </div>
+                <div class="data-item">
+                    <div class="data-label">Stroke Vol</div>
+                    <div class="data-value" id="sv-val">70<span class="data-unit">mL</span></div>
+                </div>
+                <div class="data-item" style="grid-column: span 2;">
+                    <div class="data-label">Cardiac Output</div>
+                    <div class="data-value" id="co-val">5.2<span class="data-unit">L/min</span></div>
+                </div>
+            </div>
+
+            <!-- Dynamic Anatomy Info -->
+            <div id="anatomy-info" style="margin-top: 10px; padding-top: 15px; border-top: 1px solid var(--border);">
+                <div style="color: var(--primary); font-weight: 700; font-size: 0.9rem; margin-bottom: 5px;" id="part-name">Systemic Overview</div>
+                <div style="font-size: 0.8rem; line-height: 1.5; color: var(--text-muted);" id="part-desc">
+                    Hover components to analyze physiological roles and structural histology.
+                </div>
+            </div>
+
+            <!-- Clinical Notes -->
+            <div class="notes-box">
+                <div class="notes-header">Clinical Correlation</div>
+                <div class="notes-body" id="clinical-note">
+                    Standard Resting Cardiac Output (CO) is approx 5L/min. CO = HR × Stroke Volume.
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-bar">
+            <div class="control-group">
+                <span class="control-label">BPM Regulator</span>
+                <input type="range" id="bpm-slider" min="40" max="180" value="75">
+            </div>
+
+            <div style="width: 1px; height: 30px; background: var(--border);"></div>
+
+            <div class="btn-group">
+                <button class="toggle-btn" id="btn-cut">Sagittal Section</button>
+                <button class="toggle-btn" id="btn-labels">Grid Labels</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="hint-text">Orbital Rotation Active • Raycasting Enabled</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script>
+        let scene, camera, renderer, heartGroup;
+        let mouse = new THREE.Vector2();
+        let raycaster = new THREE.Raycaster();
+        let clock = new THREE.Clock();
+        let INTERSECTED;
+        let bpm = 75;
+        let isCut = false;
+
+        const anatomyData = {
+            'Ventricles': 'Comprised of myocardium. The left ventricle is 3x thicker than the right to overcome high systemic vascular resistance.',
+            'Atria': 'Thin-walled reservoirs. The right atrium contains the SA node, the primary pacemaker of the heart.',
+            'Aorta': 'Largest artery. Its elastic walls expand during systole (Windkessel effect) to maintain continuous blood flow.',
+            'Vena Cava': 'Returns systemic blood. Low-pressure vessels with valves to ensure unidirectional flow to the right atrium.',
+            'Coronary Network': 'Provides oxygen to myocytes. Arise from the aortic sinuses at the base of the ascending aorta.'
+        };
+
+        const clinicalNotes = [
+            "Tachycardia (>100 BPM) reduces diastolic filling time, potentially lowering stroke volume.",
+            "Bradycardia (<60 BPM) in athletes is often physiological due to increased stroke volume.",
+            "Stroke volume is determined by Preload, Contractility, and Afterload.",
+            "The Frank-Starling Law states that stroke volume increases in response to an increase in volume of blood filling the heart."
+        ];
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 1, 9);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+            const p1 = new THREE.PointLight(0xff4444, 2, 20); p1.position.set(-5, 5, 5); scene.add(p1);
+            const d1 = new THREE.DirectionalLight(0xffffff, 0.8); d1.position.set(5, 10, 5); scene.add(d1);
+
+            heartGroup = new THREE.Group();
+            scene.add(heartGroup);
+
+            buildAnatomy();
+
+            // Listeners
+            window.addEventListener('resize', onWindowResize);
+            document.addEventListener('mousemove', onMouseMove);
+            
+            // Interaction: Rotate
+            let isDragging = false;
+            let prevMouse = { x: 0, y: 0 };
+            document.addEventListener('mousedown', () => isDragging = true);
+            document.addEventListener('mouseup', () => isDragging = false);
+            document.addEventListener('mousemove', (e) => {
+                if(isDragging) {
+                    heartGroup.rotation.y += (e.clientX - prevMouse.x) * 0.01;
+                    heartGroup.rotation.x += (e.clientY - prevMouse.y) * 0.01;
+                }
+                prevMouse = { x: e.clientX, y: e.clientY };
+            });
+
+            // UI Inputs
+            const bpmSlider = document.getElementById('bpm-slider');
+            bpmSlider.addEventListener('input', (e) => {
+                bpm = e.target.value;
+                updateCalculations();
+            });
+
+            document.getElementById('btn-cut').addEventListener('click', function() {
+                isCut = !isCut;
+                this.classList.toggle('active');
+                toggleSagittalSection();
+            });
+
+            updateCalculations();
+            animate();
+        }
+
+        function updateCalculations() {
+            document.getElementById('bpm-val').innerHTML = `${bpm}<span class="data-unit">BPM</span>`;
+            
+            // Simplified Physiological Model: SV decreases slightly at very high HR
+            let sv = 70;
+            if (bpm > 140) sv = 65;
+            if (bpm < 60) sv = 75;
+            
+            const co = (sv * bpm / 1000).toFixed(1);
+            
+            document.getElementById('sv-val').innerHTML = `${sv}<span class="data-unit">mL</span>`;
+            document.getElementById('co-val').innerHTML = `${co}<span class="data-unit">L/min</span>`;
+            
+            // Update Note based on BPM
+            if(bpm > 100) document.getElementById('clinical-note').innerText = clinicalNotes[0];
+            else if(bpm < 60) document.getElementById('clinical-note').innerText = clinicalNotes[1];
+            else document.getElementById('clinical-note').innerText = clinicalNotes[2];
+        }
+
+        function toggleSagittalSection() {
+            heartGroup.children.forEach(mesh => {
+                if(mesh.isMesh) {
+                    if(isCut) {
+                        // We "cut" by adding a clipping plane effect or just translating half
+                        if(mesh.position.x >= 0) {
+                            mesh.userData.originalX = mesh.position.x;
+                            mesh.position.x += 1.5;
+                        } else {
+                            mesh.userData.originalX = mesh.position.x;
+                            mesh.position.x -= 1.5;
+                        }
+                    } else {
+                        mesh.position.x = mesh.userData.originalX || 0;
+                    }
+                }
+            });
+        }
+
+        function buildAnatomy() {
+            const fleshMat = new THREE.MeshStandardMaterial({ color: 0xaa1111, roughness: 0.6, metalness: 0.1 });
+            const arteryMat = new THREE.MeshStandardMaterial({ color: 0xff3333, roughness: 0.4 });
+            const veinMat = new THREE.MeshStandardMaterial({ color: 0x2244aa, roughness: 0.4 });
+
+            // Right/Left halves for Sectioning
+            // Ventricles
+            const ventGeo = new THREE.SphereGeometry(1.6, 32, 32);
+            ventGeo.scale(1, 1.4, 0.9);
+            const vent = new THREE.Mesh(ventGeo, fleshMat);
+            vent.userData.name = 'Ventricles';
+            heartGroup.add(vent);
+
+            // Atria
+            const atriaGeo = new THREE.SphereGeometry(1.2, 24, 24);
+            atriaGeo.scale(1.3, 0.8, 1.1);
+            const atria = new THREE.Mesh(atriaGeo, fleshMat);
+            atria.position.y = 1.4;
+            atria.userData.name = 'Atria';
+            heartGroup.add(atria);
+
+            // Aorta
+            const aortaCurve = new THREE.CatmullRomCurve3([
+                new THREE.Vector3(0.3, 1.8, -0.2),
+                new THREE.Vector3(0.5, 4.0, -0.2),
+                new THREE.Vector3(-1.5, 4.2, -0.6),
+                new THREE.Vector3(-2.4, 2.0, -1.2)
+            ]);
+            const aortaGeo = new THREE.TubeGeometry(aortaCurve, 40, 0.45, 12, false);
+            const aorta = new THREE.Mesh(aortaGeo, arteryMat);
+            aorta.userData.name = 'Aorta';
+            heartGroup.add(aorta);
+
+            // Vena Cava
+            const svcGeo = new THREE.CylinderGeometry(0.35, 0.35, 3, 12);
+            const svc = new THREE.Mesh(svcGeo, veinMat);
+            svc.position.set(1.4, 2.5, -0.5);
+            svc.userData.name = 'Vena Cava';
+            heartGroup.add(svc);
+        }
+
+        function onMouseMove(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = clock.getElapsedTime();
+
+            // Pulse rhythm
+            const pulseRate = (bpm / 60) * 4; 
+            const pulse = 1 + Math.pow(Math.sin(time * pulseRate), 8) * 0.06;
+            heartGroup.scale.set(pulse, pulse, pulse);
+
+            // Interaction
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(heartGroup.children);
+
+            if (intersects.length > 0) {
+                const obj = intersects[0].object;
+                const name = obj.userData.name;
+                if (name) {
+                    document.getElementById('part-name').innerText = name;
+                    document.getElementById('part-desc').innerText = anatomyData[name];
+                    if (INTERSECTED != obj) {
+                        if (INTERSECTED && INTERSECTED.material.emissive) INTERSECTED.material.emissive.setHex(0x000000);
+                        INTERSECTED = obj;
+                        if(INTERSECTED.material.emissive) INTERSECTED.material.emissive.setHex(0x330000);
+                    }
+                }
+            } else {
+                if (INTERSECTED && INTERSECTED.material.emissive) INTERSECTED.material.emissive.setHex(0x000000);
+                INTERSECTED = null;
+            }
+
+            if(!INTERSECTED && !isCut) heartGroup.rotation.y += 0.003;
+
+            renderer.render(scene, camera);
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
