@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Salivary Glands Anatomy</title>
+    <style>
+        :root {
+            --accent: #ff8a80;
+            --bg: #0f0505;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+        body { margin: 0; overflow: hidden; background: radial-gradient(circle, #2c1010 0%, #0a0505 100%); font-family: 'Segoe UI', sans-serif; color: white; }
+        
+        #interface {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .panel {
+            background: rgba(20, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid var(--accent);
+            max-width: 300px;
+            pointer-events: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            margin-bottom: 15px;
+        }
+
+        h1 { margin: 0; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); }
+        p { font-size: 0.85rem; line-height: 1.4; opacity: 0.8; }
+
+        .anatomy-label {
+            font-size: 1.4rem;
+            color: var(--accent);
+            font-weight: bold;
+            display: block;
+        }
+
+        #hint {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            opacity: 0.5;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="interface">
+        <div class="panel">
+            <h1>Oral Cavity Anatomy</h1>
+            <p>Salivary glands produce saliva to initiate chemical digestion and maintain oral health.</p>
+        </div>
+        <div id="info-panel" class="panel" style="display:none;">
+            <span id="part-name" class="anatomy-label">Gland Name</span>
+            <p id="part-desc">Information about this specific gland...</p>
+        </div>
+    </div>
+
+    <div id="hint">Orbit: Drag • Zoom: Scroll • Hover: Identify Glands</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script>
+        let scene, camera, renderer, controls, raycaster, mouse;
+        let anatomyGroup, INTERSECTED;
+
+        const anatomyData = {
+            'Parotid Gland': 'The largest salivary gland, located in front of the ears and outside the mandible ramus. It secretes serous saliva.',
+            'Submandibular Gland': 'Found beneath the lower jaw. It produces a mix of serous and mucous saliva.',
+            'Sublingual Gland': 'The smallest major gland, situated under the tongue in the floor of the mouth.',
+            'Tongue': 'A muscular organ covered in moist pink tissue (mucosa). It helps in mechanical digestion and moves saliva.',
+            'Mandible (Jaw)': 'The lower jawbone. It supports the lower teeth and serves as a landmark for the major salivary glands.'
+        };
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(12, 8, 18);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.body.appendChild(renderer.domElement);
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.target.set(0, 2, 0);
+
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+
+            // Lighting
+            scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+            const spot = new THREE.SpotLight(0xffcccc, 1.2);
+            spot.position.set(15, 20, 15);
+            scene.add(spot);
+            
+            const backLight = new THREE.PointLight(0xffffff, 0.5);
+            backLight.position.set(-10, 5, -10);
+            scene.add(backLight);
+
+            createModel();
+
+            window.addEventListener('resize', onWindowResize);
+            window.addEventListener('mousemove', onMouseMove);
+            animate();
+        }
+
+        function createModel() {
+            anatomyGroup = new THREE.Group();
+            scene.add(anatomyGroup);
+
+            // 1. MANDIBLE (U-Shaped Jaw Bone)
+            const jawMat = new THREE.MeshPhongMaterial({ color: 0xeeece1, shininess: 10 });
+            const jawGroup = new THREE.Group();
+
+            // Jaw Base (The "U")
+            const jawBaseGeo = new THREE.TorusGeometry(4.5, 0.5, 12, 30, Math.PI);
+            const jawBase = new THREE.Mesh(jawBaseGeo, jawMat);
+            jawBase.rotation.x = Math.PI / 2;
+            jawBase.position.z = 1.5;
+            jawGroup.add(jawBase);
+
+            // Rami (Vertical parts)
+            const ramusGeo = new THREE.CylinderGeometry(0.5, 0.5, 4, 12);
+            const ramusL = new THREE.Mesh(ramusGeo, jawMat);
+            ramusL.position.set(4.5, 2, 1.5);
+            
+            const ramusR = ramusL.clone();
+            ramusR.position.x = -4.5;
+            
+            jawGroup.add(ramusL, ramusR);
+            jawGroup.userData.name = 'Mandible (Jaw)';
+            // Tag all children for raycasting
+            jawGroup.children.forEach(c => c.userData.name = 'Mandible (Jaw)');
+            anatomyGroup.add(jawGroup);
+
+            // 2. TONGUE
+            const tongueGeo = new THREE.SphereGeometry(2.5, 32, 24);
+            tongueGeo.scale(1.2, 0.5, 1.6);
+            const tongueMat = new THREE.MeshPhongMaterial({ color: 0xd32f2f, shininess: 5 });
+            const tongue = new THREE.Mesh(tongueGeo, tongueMat);
+            tongue.position.set(0, 0.8, 3.5);
+            tongue.userData.name = 'Tongue';
+            anatomyGroup.add(tongue);
+
+            // 3. PAROTID GLANDS (Located behind/outside the jaw ramus)
+            const parotidGeo = new THREE.SphereGeometry(1.2, 32, 32);
+            parotidGeo.scale(0.7, 1.8, 1.1);
+            const parotidMat = new THREE.MeshPhongMaterial({ color: 0xffab91, shininess: 30 });
+            
+            const pLeft = new THREE.Mesh(parotidGeo, parotidMat);
+            pLeft.position.set(5.2, 2.5, 1);
+            pLeft.userData.name = 'Parotid Gland';
+            
+            const pRight = pLeft.clone();
+            pRight.position.x = -5.2;
+            pRight.userData.name = 'Parotid Gland';
+            
+            anatomyGroup.add(pLeft, pRight);
+
+            // 4. SUBMANDIBULAR GLANDS (Tucked under the jaw curve)
+            const submandGeo = new THREE.SphereGeometry(0.9, 24, 24);
+            submandGeo.scale(1.1, 0.8, 1.2);
+            const submandMat = new THREE.MeshPhongMaterial({ color: 0xff8a80, shininess: 20 });
+            
+            const smLeft = new THREE.Mesh(submandGeo, submandMat);
+            smLeft.position.set(3, -0.2, 2.5);
+            smLeft.userData.name = 'Submandibular Gland';
+            
+            const smRight = smLeft.clone();
+            smRight.position.x = -3;
+            smRight.userData.name = 'Submandibular Gland';
+            
+            anatomyGroup.add(smLeft, smRight);
+
+            // 5. SUBLINGUAL GLAND (Under the front of the tongue)
+            const sublingGeo = new THREE.SphereGeometry(0.6, 24, 24);
+            sublingGeo.scale(1.4, 0.6, 1);
+            const sublingMat = new THREE.MeshPhongMaterial({ color: 0xff5252, shininess: 40 });
+            
+            const sl = new THREE.Mesh(sublingGeo, sublingMat);
+            sl.position.set(0, 0.5, 4.5);
+            sl.userData.name = 'Sublingual Gland';
+            anatomyGroup.add(sl);
+        }
+
+        function onMouseMove(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = performance.now() * 0.001;
+
+            // ORGANIC PULSING for Glands
+            anatomyGroup.children.forEach((child, i) => {
+                if (child.userData.name && child.userData.name.includes('Gland')) {
+                    const pulse = 1 + Math.sin(time * 2.5 + i) * 0.025;
+                    child.scale.set(
+                        child.scale.x > 0 ? pulse * (child.geometry.type === 'SphereGeometry' ? 1 : 1) : pulse,
+                        pulse,
+                        pulse
+                    );
+                }
+            });
+
+            // TONGUE MOVEMENT
+            const tongue = anatomyGroup.children.find(c => c.userData.name === 'Tongue');
+            if (tongue) {
+                tongue.position.y = 0.8 + Math.sin(time * 1.5) * 0.05;
+                tongue.scale.z = 1.6 + Math.sin(time * 1.5) * 0.02;
+            }
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(anatomyGroup.children, true);
+            const infoPanel = document.getElementById('info-panel');
+
+            if (intersects.length > 0) {
+                let obj = intersects[0].object;
+                // Traverse up to find a name if child doesn't have it
+                while (obj && !obj.userData.name && obj.parent) obj = obj.parent;
+                const name = obj.userData.name;
+
+                if (name && anatomyData[name]) {
+                    infoPanel.style.display = 'block';
+                    document.getElementById('part-name').innerText = name;
+                    document.getElementById('part-desc').innerText = anatomyData[name];
+
+                    if (INTERSECTED !== obj) {
+                        if (INTERSECTED && INTERSECTED.material && INTERSECTED.material.emissive) INTERSECTED.material.emissive.setHex(0x000000);
+                        INTERSECTED = obj;
+                        if (INTERSECTED.material && INTERSECTED.material.emissive) {
+                             INTERSECTED.material.emissive.setHex(name.includes('Gland') ? 0x442222 : 0x222222);
+                        }
+                    }
+                }
+            } else {
+                infoPanel.style.display = 'none';
+                if (INTERSECTED && INTERSECTED.material && INTERSECTED.material.emissive) INTERSECTED.material.emissive.setHex(0x000000);
+                INTERSECTED = null;
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        init();
+    </script>
+</body>
+</html>
